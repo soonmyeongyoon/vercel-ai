@@ -1,5 +1,9 @@
 import { formatStreamPart } from '../shared/stream-parts';
-import { AssistantMessage, DataMessage } from '../shared/types';
+import {
+  AssistantMessage,
+  DataMessage,
+  ToolCallMessage,
+} from '../shared/types';
 
 type AssistantResponseSettings = {
   threadId: string;
@@ -11,6 +15,7 @@ type AssistantResponseCallback = (stream: {
   messageId: string;
   sendMessage: (message: AssistantMessage) => void;
   sendDataMessage: (message: DataMessage) => void;
+  sendToolCallMessage: (message: ToolCallMessage) => void;
 }) => Promise<void>;
 
 export function experimental_AssistantResponse(
@@ -38,6 +43,12 @@ export function experimental_AssistantResponse(
           textEncoder.encode(formatStreamPart('error', errorMessage)),
         );
       };
+      // CUSTOM IMPLEMENTATION TO SUPPORT TOOL CALL FORWARDING TO FRONTEND
+      const sendToolCallMessage = (message: ToolCallMessage) => {
+        controller.enqueue(
+          textEncoder.encode(formatStreamPart('tool_calls', message)),
+        );
+      };
 
       // send the threadId and messageId as the first message:
       controller.enqueue(
@@ -55,6 +66,7 @@ export function experimental_AssistantResponse(
           messageId,
           sendMessage,
           sendDataMessage,
+          sendToolCallMessage,
         });
       } catch (error) {
         sendError((error as any).message ?? `${error}`);
