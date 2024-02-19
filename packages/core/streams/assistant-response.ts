@@ -10,7 +10,7 @@ type AssistantResponseSettings = {
   messageId: string;
 };
 
-type AssistantResponseCallback = (stream: {
+export type AssistantResponseCallback = (stream: {
   threadId: string;
   messageId: string;
   sendMessage: (message: AssistantMessage) => void;

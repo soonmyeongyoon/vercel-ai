@@ -343,8 +343,6 @@ export type DataMessage = {
 };
 
 export type ToolCallMessage = {
-  id: string;
-  tool_call_id: string;
   role: 'tool';
   tool_calls: ToolCall[];
 };
